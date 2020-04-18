@@ -20,7 +20,7 @@ gradlePlugin {
     // Define the plugin
     val greeting by plugins.registering {
         id = "com.geekorum.gradle.avdl.greeting"
-        implementationClass = "com.geekorum.gradle.avdl.GradleAvdlPlugin"
+        implementationClass = "com.geekorum.gradle.avdl.AvdlPlugin"
     }
 }
 
