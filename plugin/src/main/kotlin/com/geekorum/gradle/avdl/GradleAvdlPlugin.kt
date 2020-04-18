@@ -12,8 +12,8 @@ import org.gradle.api.Plugin
 class GradleAvdlPlugin: Plugin<Project> {
     override fun apply(project: Project) {
         // Register a task
-        project.tasks.register("greeting") { task ->
-            task.doLast {
+        project.tasks.register("greeting") {
+            doLast {
                 println("Hello from plugin 'com.geekorum.gradle.avdl.greeting'")
             }
         }
