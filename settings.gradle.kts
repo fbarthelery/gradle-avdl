@@ -8,3 +8,4 @@
  */
 
 rootProject.name = "gradle-avdl"
+include(":plugin")
