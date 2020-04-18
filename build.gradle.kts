@@ -17,7 +17,3 @@ allprojects {
         kotlinOptions.jvmTarget = "1.8"
     }
 }
-
-repositories {
-    jcenter()
-}

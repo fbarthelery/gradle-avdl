@@ -5,12 +5,16 @@ package com.geekorum.gradle.avdl
 
 import org.gradle.api.Project
 import org.gradle.api.Plugin
+import org.gradle.kotlin.dsl.create
 
 /**
  * A simple 'hello world' plugin.
  */
 class AvdlPlugin: Plugin<Project> {
     override fun apply(project: Project) {
+        // add extension
+        project.extensions.create<AvdlExtension>("avdl")
+
         // Register a task
         project.tasks.register("greeting") {
             doLast {

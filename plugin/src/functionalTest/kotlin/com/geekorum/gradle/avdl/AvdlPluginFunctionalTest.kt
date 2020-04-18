@@ -5,6 +5,7 @@ package com.geekorum.gradle.avdl
 
 import java.io.File
 import org.gradle.testkit.runner.GradleRunner
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -12,6 +13,12 @@ import kotlin.test.assertTrue
  * A simple functional test for the 'com.geekorum.gradle.avdl.greeting' plugin.
  */
 class AvdlPluginFunctionalTest {
+    @BeforeTest
+    fun cleanUpProjectDir() {
+        val projectDir = File("build/functionalTest")
+        projectDir.deleteRecursively()
+    }
+
     @Test fun `can run task`() {
         // Setup the test build
         val projectDir = File("build/functionalTest")
@@ -34,4 +41,35 @@ class AvdlPluginFunctionalTest {
         // Verify the result
         assertTrue(result.output.contains("Hello from plugin 'com.geekorum.gradle.avdl.greeting'"))
     }
+
+    @Test fun `can create some virtual devices definition`() {
+        // Setup the test build
+        val projectDir = File("build/functionalTest")
+        projectDir.mkdirs()
+        projectDir.resolve("settings.gradle").writeText("")
+        projectDir.resolve("build.gradle").writeText("""
+            plugins {
+                id('com.geekorum.gradle.avdl.greeting')
+            }
+
+            avdl {
+                devices {
+                    create("first")
+                    register("second")
+                }
+            }
+        """)
+
+        // Run the build
+        val runner = GradleRunner.create()
+                .forwardOutput()
+                .withPluginClasspath()
+                .withArguments("greeting")
+                .withProjectDir(projectDir)
+        val result = runner.build();
+
+        // Verify the result
+        assertTrue(result.output.contains("Hello from plugin 'com.geekorum.gradle.avdl.greeting'"))
+    }
+
 }
