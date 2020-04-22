@@ -15,7 +15,7 @@ import org.gradle.workers.WorkerExecutor
 import javax.inject.Inject
 
 abstract class LaunchDeviceTask @Inject constructor(
-        private val objectFactory: ObjectFactory,
+        objectFactory: ObjectFactory,
         private val workerExecutor: WorkerExecutor
 ) : DefaultTask() {
 
@@ -26,13 +26,16 @@ abstract class LaunchDeviceTask @Inject constructor(
     @get:Nested
     internal val deviceDefinitions = project.the<AvdlExtension>().devices
 
+    @Suppress("UnstableApiUsage")
     @TaskAction
     fun launchDevices() {
+        val classpath = project.buildscript.configurations["classpath"]
         devices.get().forEach {
             val deviceDefinition = deviceDefinitions[it]
             workerExecutor.noIsolation().submit(LaunchDeviceWork::class.java) {
                 val deviceProviderPlugin = checkNotNull(deviceDefinition.setup?.deviceProviderPlugin)
                 val configurationBlob = checkNotNull(deviceDefinition.setup?.configuration)
+                buildScriptClasspath.set(classpath.asPath)
                 pluginClass.set(deviceProviderPlugin)
                 setConfiguration(configurationBlob)
             }
@@ -40,6 +43,7 @@ abstract class LaunchDeviceTask @Inject constructor(
     }
 }
 
+@Suppress("UnstableApiUsage")
 private abstract class LaunchDeviceWork @Inject constructor(
         private val objectFactory: ObjectFactory
 ) : WorkAction<ProviderWorkerParams> {
@@ -52,7 +56,9 @@ private abstract class LaunchDeviceWork @Inject constructor(
     private fun createPlugin(): DeviceProviderPlugin {
         val pluginClassName = parameters.pluginClass.get()
         val pluginClass = Class.forName(pluginClassName)
-        return objectFactory.newInstance(pluginClass) as DeviceProviderPlugin
+        return (objectFactory.newInstance(pluginClass) as DeviceProviderPlugin).apply {
+            buildscriptClasspath.from(parameters.buildScriptClasspath.get().split(":"))
+        }
     }
 
 }

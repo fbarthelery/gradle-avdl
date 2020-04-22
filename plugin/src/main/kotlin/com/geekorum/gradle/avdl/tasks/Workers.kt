@@ -5,6 +5,7 @@ import org.gradle.workers.WorkParameters
 
 
 internal interface ProviderWorkerParams : WorkParameters {
+    val buildScriptClasspath: Property<String>
     val pluginClass: Property<String>
     // Seems like gradle can't serialize WorkParameters if they are Byte or primitive array
     // like ShortArray. Works fine with Array<Short> so we need to convert it
@@ -22,9 +23,10 @@ internal fun ProviderWorkerParams.getConfigurationBlob(): ByteArray {
 
 
 private fun ByteArray.toShortArray(): ShortArray {
-    return ShortArray(this.size / 2) {
+    val resultSize = size / 2 + size % 2
+    return ShortArray(resultSize) {
         val high: Short = (this[it * 2].toInt() shl 8).toShort()
-        val low = this[it * 2 + 1].toShort()
+        val low = getOrElse(it * 2 + 1, { 0 } ).toShort()
         (high + low).toShort()
     }
 }

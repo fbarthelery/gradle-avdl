@@ -1,5 +1,8 @@
 package com.geekorum.gradle.avdl
 
+import org.gradle.api.model.ObjectFactory
+import javax.inject.Inject
+
 /*
  * Api for providers of VirtualDevice
  */
@@ -9,9 +12,14 @@ package com.geekorum.gradle.avdl
  * instance of DeviceSetupFunction so that users can call it in their [VirtualDeviceDefinition]
  *
  * A DeviceSetupFunction takes a [VirtualDeviceDefinition] as receiver and returns a [DeviceSetup] instance.
- * It can has many parameters
+ * It can has many parameters.
+ *
+ * Implementation of this class must not be final. They can have injected Gradle services
  */
-abstract class DeviceProviderPlugin {
+abstract class DeviceProviderPlugin @Inject constructor(
+        objectFactory: ObjectFactory
+) {
+        val buildscriptClasspath = objectFactory.fileCollection()
         abstract fun createController(configuration: ByteArray) : VirtualDeviceController
 }
 
