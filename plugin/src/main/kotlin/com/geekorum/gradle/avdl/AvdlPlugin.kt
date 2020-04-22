@@ -14,12 +14,5 @@ class AvdlPlugin: Plugin<Project> {
     override fun apply(project: Project) {
         // add extension
         project.extensions.create<AvdlExtension>("avdl")
-
-        // Register a task
-        project.tasks.register("greeting") {
-            doLast {
-                println("Hello from plugin 'com.geekorum.gradle.avdl.greeting'")
-            }
-        }
     }
 }

@@ -19,7 +19,7 @@ dependencies {
 gradlePlugin {
     // Define the plugin
     val greeting by plugins.registering {
-        id = "com.geekorum.gradle.avdl.greeting"
+        id = "com.geekorum.gradle.avdl"
         implementationClass = "com.geekorum.gradle.avdl.AvdlPlugin"
     }
 }

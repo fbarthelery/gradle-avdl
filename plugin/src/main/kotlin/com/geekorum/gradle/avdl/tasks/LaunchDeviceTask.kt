@@ -22,7 +22,6 @@ abstract class LaunchDeviceTask @Inject constructor(
     @get:Input
     val devices = objectFactory.listProperty<String>()
 
-    @get:Input
     @get:Nested
     internal val deviceDefinitions = project.the<AvdlExtension>().devices
 
