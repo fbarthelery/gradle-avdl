@@ -13,6 +13,6 @@ import org.gradle.kotlin.dsl.create
 class AvdlPlugin: Plugin<Project> {
     override fun apply(project: Project) {
         // add extension
-        project.extensions.create<AvdlExtension>("avdl")
+        project.extensions.create<AvdlExtension>("avdl", project)
     }
 }

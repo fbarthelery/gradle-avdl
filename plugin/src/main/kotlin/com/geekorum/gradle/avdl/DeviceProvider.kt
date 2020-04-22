@@ -1,6 +1,7 @@
 package com.geekorum.gradle.avdl
 
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.tasks.Input
 import javax.inject.Inject
 
 /*
@@ -36,11 +37,15 @@ data class DeviceSetup(
         /**
          * Fully qualified name of the class implementing the [DeviceProviderPlugin]
          */
+        @Input
         val deviceProviderPlugin: String,
 
         /**
          * Configuration blob
+         * This configuration blob will be the parameter of your plugin [DeviceProviderPlugin.createController]
+         * method
          */
+        @Input
         val configuration: ByteArray
 ) {
 
