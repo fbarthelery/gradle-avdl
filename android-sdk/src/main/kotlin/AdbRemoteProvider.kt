@@ -53,7 +53,7 @@ private class AdbRemoteController(
 
 @Serializable
 class AdbRemoteConfiguration {
-    var host: String = ""
+    var host: String = "localhost"
     var port: Int = 5555
 
     var adbExecutable: String? = null
