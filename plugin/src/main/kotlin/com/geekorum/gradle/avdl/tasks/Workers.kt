@@ -1,7 +1,13 @@
 package com.geekorum.gradle.avdl.tasks
 
+import com.geekorum.gradle.avdl.DeviceProviderPlugin
+import com.geekorum.gradle.avdl.VirtualDeviceController
+import com.geekorum.gradle.avdl.VirtualDeviceDefinition
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
+import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
+import javax.inject.Inject
 
 
 internal interface ProviderWorkerParams : WorkParameters {
@@ -11,6 +17,33 @@ internal interface ProviderWorkerParams : WorkParameters {
     // like ShortArray. Works fine with Array<Short> so we need to convert it
     val configuration : Property<Array<Short>>
 
+}
+
+@Suppress("UnstableApiUsage")
+internal abstract class DeviceWorker<T :  ProviderWorkerParams> @Inject constructor(
+        private val objectFactory: ObjectFactory
+) : WorkAction<T> {
+
+    val plugin: DeviceProviderPlugin by lazy { createPlugin() }
+
+    val controller: VirtualDeviceController by lazy {
+        plugin.createController(parameters.getConfigurationBlob())
+    }
+
+    private fun createPlugin(): DeviceProviderPlugin {
+        val pluginClassName = parameters.pluginClass.get()
+        val pluginClass = Class.forName(pluginClassName)
+        return (objectFactory.newInstance(pluginClass) as DeviceProviderPlugin).apply {
+            buildscriptClasspath.from(parameters.buildScriptClasspath.get().split(":"))
+        }
+    }
+}
+
+internal fun ProviderWorkerParams.setDeviceDefinitionParams(deviceDefinition: VirtualDeviceDefinition) {
+    val deviceProviderPlugin = checkNotNull(deviceDefinition.setup?.deviceProviderPlugin)
+    val configurationBlob = checkNotNull(deviceDefinition.setup?.configuration)
+    pluginClass.set(deviceProviderPlugin)
+    setConfiguration(configurationBlob)
 }
 
 internal fun ProviderWorkerParams.setConfiguration(blob: ByteArray) {
