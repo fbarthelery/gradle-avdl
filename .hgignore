@@ -64,3 +64,6 @@ res/raw/third_party_license*
 
 # Android studio captures
 captures/
+
+# local maven repository for tests
+repo/

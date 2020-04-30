@@ -40,7 +40,6 @@ private class AdbRemoteController(
     override fun startDevice() {
         execOperations.exec {
             commandLine(config.adbExecutable, "connect", config.connectString)
-            println("command line is $commandLine")
         }
     }
 

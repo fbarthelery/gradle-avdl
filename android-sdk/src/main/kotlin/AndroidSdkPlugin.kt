@@ -1,6 +1,5 @@
 package com.geekorum.gradle.avdl.providers.androidsdk
 
-import com.android.annotations.NonNull
 import com.android.build.gradle.BaseExtension
 import com.geekorum.gradle.avdl.AvdlPlugin
 import com.google.common.base.Charsets
@@ -63,10 +62,9 @@ internal fun findSdkLocation(project: Project): File? {
  * @param rootDir directory for resolving relative paths.
  * @return Pair of SDK location and boolean indicating if it's a regular SDK.
  */
-@NonNull
 private fun findSdkLocation(
         properties: Properties,
-        @NonNull rootDir: File
+        rootDir: File
 ): Pair<File?, Boolean> {
     fun absoluteOrRelativeSdk(path: String): Pair<File?, Boolean> {
         var sdk = File(path)
