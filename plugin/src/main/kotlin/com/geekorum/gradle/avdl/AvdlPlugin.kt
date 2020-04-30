@@ -5,6 +5,7 @@ package com.geekorum.gradle.avdl
 
 import org.gradle.api.Project
 import org.gradle.api.Plugin
+import org.gradle.api.attributes.Usage
 import org.gradle.kotlin.dsl.create
 
 /**
@@ -14,5 +15,13 @@ class AvdlPlugin: Plugin<Project> {
     override fun apply(project: Project) {
         // add extension
         project.extensions.create<AvdlExtension>("avdl", project)
+
+        project.configurations.register("avdl") {
+            isVisible = false
+            description = "Dependencies for Avdl providers"
+            attributes {
+                attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage::class.java, Usage.JAVA_RUNTIME))
+            }
+        }
     }
 }

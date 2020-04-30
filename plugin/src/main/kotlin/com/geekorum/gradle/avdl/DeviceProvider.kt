@@ -20,7 +20,7 @@ import javax.inject.Inject
 abstract class DeviceProviderPlugin @Inject constructor(
         objectFactory: ObjectFactory
 ) {
-        val buildscriptClasspath = objectFactory.fileCollection()
+        val avdlClasspath = objectFactory.fileCollection()
         abstract fun createController(configuration: ByteArray) : VirtualDeviceController
 }
 

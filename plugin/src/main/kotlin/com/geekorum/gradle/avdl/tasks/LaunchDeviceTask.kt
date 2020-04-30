@@ -26,12 +26,12 @@ abstract class LaunchDeviceTask @Inject constructor(
     @Suppress("UnstableApiUsage")
     @TaskAction
     fun launchDevices() {
-        val classpath = project.buildscript.configurations["classpath"]
+        val classpath = project.configurations["avdl"]
         devices.get().forEach {
             val deviceDefinition = deviceDefinitions[it]
             workerExecutor.noIsolation().submit(LaunchDeviceWork::class.java) {
                 setDeviceDefinitionParams(deviceDefinition)
-                buildScriptClasspath.set(classpath.asPath)
+                avdlClasspath.from(classpath)
             }
         }
     }

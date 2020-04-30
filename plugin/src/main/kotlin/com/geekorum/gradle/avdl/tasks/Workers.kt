@@ -3,6 +3,7 @@ package com.geekorum.gradle.avdl.tasks
 import com.geekorum.gradle.avdl.DeviceProviderPlugin
 import com.geekorum.gradle.avdl.VirtualDeviceController
 import com.geekorum.gradle.avdl.VirtualDeviceDefinition
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.workers.WorkAction
@@ -11,7 +12,7 @@ import javax.inject.Inject
 
 
 internal interface ProviderWorkerParams : WorkParameters {
-    val buildScriptClasspath: Property<String>
+    val avdlClasspath: ConfigurableFileCollection
     val pluginClass: Property<String>
     // Seems like gradle can't serialize WorkParameters if they are Byte or primitive array
     // like ShortArray. Works fine with Array<Short> so we need to convert it
@@ -34,7 +35,7 @@ internal abstract class DeviceWorker<T :  ProviderWorkerParams> @Inject construc
         val pluginClassName = parameters.pluginClass.get()
         val pluginClass = Class.forName(pluginClassName)
         return (objectFactory.newInstance(pluginClass) as DeviceProviderPlugin).apply {
-            buildscriptClasspath.from(parameters.buildScriptClasspath.get().split(":"))
+            avdlClasspath.from(parameters.avdlClasspath)
         }
     }
 }

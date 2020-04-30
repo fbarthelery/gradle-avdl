@@ -12,7 +12,7 @@ import org.gradle.kotlin.dsl.the
 import org.gradle.workers.WorkerExecutor
 import javax.inject.Inject
 
-class StopDeviceTask@Inject constructor(
+abstract class StopDeviceTask@Inject constructor(
         objectFactory: ObjectFactory,
         private val workerExecutor: WorkerExecutor
 ) : DefaultTask() {
@@ -26,12 +26,12 @@ class StopDeviceTask@Inject constructor(
     @Suppress("UnstableApiUsage")
     @TaskAction
     fun stopDevices() {
-        val classpath = project.buildscript.configurations["classpath"]
+        val classpath = project.configurations["avdl"]
         devices.get().forEach {
             val deviceDefinition = deviceDefinitions[it]
             workerExecutor.noIsolation().submit(StopDeviceWork::class.java) {
                 setDeviceDefinitionParams(deviceDefinition)
-                buildScriptClasspath.set(classpath.asPath)
+                avdlClasspath.from(classpath)
             }
         }
     }
