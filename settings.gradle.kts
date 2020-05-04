@@ -22,4 +22,5 @@
 
 rootProject.name = "gradle-avdl"
 include(":plugin",
-        ":android-sdk")
+        ":android-sdk",
+        ":flydroid")
