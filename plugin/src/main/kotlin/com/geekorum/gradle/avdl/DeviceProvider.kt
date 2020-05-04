@@ -42,6 +42,10 @@ abstract class DeviceProviderPlugin @Inject constructor(
         objectFactory: ObjectFactory
 ) {
         val avdlClasspath = objectFactory.fileCollection()
+
+        /**
+         * Create the VirtualDeviceController for this configuration
+         */
         abstract fun createController(configuration: ByteArray) : VirtualDeviceController
 }
 
