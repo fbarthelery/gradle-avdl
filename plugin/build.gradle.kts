@@ -22,6 +22,7 @@
 plugins {
     `kotlin-dsl`
     `maven-publish`
+    id("com.gradle.plugin-publish") version "0.11.0"
 }
 
 dependencies {
@@ -42,7 +43,9 @@ gradlePlugin {
     // Define the plugin
     val avdlPlugin by plugins.registering {
         id = "com.geekorum.gradle.avdl"
+        displayName = "Plugin to launch Android Virtual Devices during build"
         implementationClass = "com.geekorum.gradle.avdl.AvdlPlugin"
+        description = "Launch Android Virtual Devices during your build"
     }
 }
 
@@ -66,4 +69,10 @@ tasks {
         // Run the functional tests as part of `check`
         dependsOn(functionalTest)
     }
+}
+
+pluginBundle {
+    website = "https://github.com/fbarthelery/gradle-avdl"
+    vcsUrl = "https://github.com/fbarthelery/gradle-avdl"
+    tags = listOf("android", "devices", "testing", "integrationTesting")
 }
