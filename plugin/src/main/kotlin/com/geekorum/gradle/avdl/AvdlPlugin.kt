@@ -18,7 +18,7 @@ class AvdlPlugin: Plugin<Project> {
 
         project.configurations.register("avdl") {
             isVisible = false
-            description = "Dependencies for Avdl providers"
+            description = "Dependencies for avdl providers"
             attributes {
                 attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage::class.java, Usage.JAVA_RUNTIME))
             }
