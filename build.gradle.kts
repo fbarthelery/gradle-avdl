@@ -1,3 +1,4 @@
+import com.geekorum.build.SourceLicenseCheckerPlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -14,6 +15,8 @@ allprojects {
     repositories {
         jcenter()
     }
+
+    apply<SourceLicenseCheckerPlugin>()
 
     plugins.withType<MavenPublishPlugin> {
         publishing {
