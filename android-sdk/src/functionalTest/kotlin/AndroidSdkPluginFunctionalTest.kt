@@ -75,7 +75,7 @@ class AndroidSdkPluginFunctionalTest {
                                 File(parent, "../${parentFile.name}/$name")
                             }
                     ))
-                }.withDebug(true)
+                }
                 .withArguments(":devices")
                 .withProjectDir(projectDir.root)
                 .build()
@@ -87,4 +87,54 @@ class AndroidSdkPluginFunctionalTest {
             """.trimMargin())
         }
     }
+
+    @Test
+    fun `can create device in groovy`() {
+        projectDir.root.resolve("settings.gradle")
+        projectDir.root.resolve("build.gradle").writeText("""
+            import com.geekorum.gradle.avdl.providers.androidsdk.AdbRemoteProvider
+
+            plugins {
+                id("com.geekorum.gradle.avdl.providers.android-sdk")
+            }
+
+            avdl {
+                devices {
+                    "test" {
+                        use (AdbRemoteProvider) {
+                            setup = adbRemote {
+                                host = "192.168.1.42"
+                                port = 4242
+                            }
+                        }
+                    }
+                }
+            }
+
+            tasks.register("devices") {
+                doLast {
+                    def device = avdl.devices["test"]
+                    println("name ${'$'}{device.name}")
+                    println("plugin ${'$'}{device.setup?.deviceProviderPlugin}")
+                }
+            }
+        """)
+
+        // Run the build
+        val result = GradleRunner.create()
+                .forwardOutput()
+                .withPluginClasspath()
+                .withArguments("--stacktrace", ":devices")
+                .withProjectDir(projectDir.root)
+                .build()
+
+        assertEquals(TaskOutcome.SUCCESS, result.task(":devices")!!.outcome)
+        assertTrue {
+            result.output.contains("""name test
+            |plugin com.geekorum.gradle.avdl.providers.androidsdk.AdbRemoteProvider
+            """.trimMargin())
+        }
+    }
+
+
 }

@@ -25,12 +25,14 @@ import com.geekorum.gradle.avdl.DeviceProviderPlugin
 import com.geekorum.gradle.avdl.DeviceSetup
 import com.geekorum.gradle.avdl.VirtualDeviceController
 import com.geekorum.gradle.avdl.VirtualDeviceDefinition
+import groovy.lang.Closure
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
 import org.gradle.api.model.ObjectFactory
 import org.gradle.process.ExecOperations
 import javax.inject.Inject
+import com.geekorum.gradle.avdl.providers.androidsdk.adbRemote as groovyAdbRemote
 
 @Suppress("UnstableApiUsage", "UnstableApiUsage")
 open class AdbRemoteProvider @Inject constructor(
@@ -42,6 +44,14 @@ open class AdbRemoteProvider @Inject constructor(
     override fun createController(configuration: ByteArray): VirtualDeviceController {
         val config = AdbRemoteConfiguration.fromByteArray(configuration)
         return AdbRemoteController(execOperations, config)
+    }
+
+    // for Groovy support
+    companion object {
+        @JvmStatic
+        fun adbRemote(deviceDefinition: VirtualDeviceDefinition, fn: Closure<*>): DeviceSetup {
+            return groovyAdbRemote(deviceDefinition, fn)
+        }
     }
 }
 
