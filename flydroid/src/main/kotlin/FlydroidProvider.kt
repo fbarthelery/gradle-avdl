@@ -44,11 +44,14 @@ import okio.source
 import org.gradle.api.file.FileCollection
 import org.gradle.api.model.ObjectFactory
 import org.gradle.process.ExecOperations
+import org.slf4j.LoggerFactory
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.net.Socket
 import javax.inject.Inject
+
+private val LOGGER = LoggerFactory.getLogger("Flydroid")
 
 open class FlydroidProvider @Inject constructor(
         objectFactory: ObjectFactory,
@@ -123,15 +126,15 @@ internal class FlydroidController(
 
     @OptIn(ExperimentalStdlibApi::class)
     override fun startDevice(): Unit = runBlocking {
-        println("use tunnel ${configuration.useTunnel}")
-        println("starting device on flydroid server ${configuration.url}")
+        LOGGER.info("starting device on flydroid server ${configuration.url}")
+        LOGGER.debug("use tunnel ${configuration.useTunnel}")
         val request = StartRequest(
                 name = configuration.name,
                 image = configuration.image!!,
                 email = configuration.email!!,
                 adbkey = configuration.adbkey!!)
         val response = service.start(request)
-        println("api response $response")
+        LOGGER.trace("api response $response")
 
         val adbConnectString = if (configuration.useTunnel) {
             val tunnelString = "${response.ip}:${response.adbPort}"
@@ -220,7 +223,7 @@ internal class FlydroidController(
                 commandLine(adb, "disconnect", connectionString)
             }
         }
-        println("api response $virtualDevice")
+        LOGGER.trace("api response $virtualDevice")
     }
 }
 
