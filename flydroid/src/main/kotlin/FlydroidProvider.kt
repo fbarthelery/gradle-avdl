@@ -78,7 +78,6 @@ class FlydroidConfiguration(
         internal val name: String
 ) {
     var url: String? = null
-    var email: String? = null
     var adbkey: String? = null
     var flydroidKey: String? = null
     var useTunnel = false
@@ -131,7 +130,8 @@ internal class FlydroidController(
         val request = StartRequest(
                 name = configuration.name,
                 image = configuration.image!!,
-                email = configuration.email!!,
+                //TODO remove once server removed it
+                email = "",
                 adbkey = configuration.adbkey!!)
         val response = service.start(request)
         LOGGER.trace("api response $response")
