@@ -33,7 +33,7 @@ plugins {
 
 allprojects {
     group = "com.geekorum.gradle.avdl"
-    version = "0.0.1-SNAPSHOT"
+    version = "0.0.1"
 
     repositories {
         jcenter()
