@@ -27,6 +27,7 @@ plugins {
     kotlin("jvm") version "1.3.70" apply false
     kotlin("plugin.serialization") version "1.3.70" apply false
     `maven-publish`
+    id("com.gradle.plugin-publish") version "0.11.0" apply false
 }
 
 

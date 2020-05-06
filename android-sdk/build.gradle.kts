@@ -23,6 +23,7 @@ plugins {
     `kotlin-dsl`
     `maven-publish`
     kotlin("plugin.serialization")
+    id("com.gradle.plugin-publish")
 }
 
 repositories {
@@ -46,8 +47,17 @@ gradlePlugin {
     val androidsdk by plugins.registering {
         id = "com.geekorum.gradle.avdl.providers.android-sdk"
         implementationClass = "com.geekorum.gradle.avdl.providers.androidsdk.AndroidSdkPlugin"
+        displayName = "Android SDK provider for the Gradle-avdl plugin"
+        description = "Launch Android Virtual Devices during your build"
     }
 }
+
+pluginBundle {
+    website = "https://github.com/fbarthelery/gradle-avdl/tree/master/android-sdk"
+    vcsUrl = "https://github.com/fbarthelery/gradle-avdl"
+    tags = listOf("android", "devices", "testing", "integrationTesting")
+}
+
 
 // Add a source set for the functional test suite
 val functionalTestSourceSet = sourceSets.create("functionalTest") {

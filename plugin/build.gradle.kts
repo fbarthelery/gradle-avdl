@@ -22,7 +22,7 @@
 plugins {
     `kotlin-dsl`
     `maven-publish`
-    id("com.gradle.plugin-publish") version "0.11.0"
+    id("com.gradle.plugin-publish")
 }
 
 dependencies {
@@ -49,6 +49,13 @@ gradlePlugin {
     }
 }
 
+pluginBundle {
+    website = "https://github.com/fbarthelery/gradle-avdl"
+    vcsUrl = "https://github.com/fbarthelery/gradle-avdl"
+    tags = listOf("android", "devices", "testing", "integrationTesting")
+}
+
+
 // Add a source set for the functional test suite
 val functionalTestSourceSet = sourceSets.create("functionalTest") {
 }
@@ -69,10 +76,4 @@ tasks {
         // Run the functional tests as part of `check`
         dependsOn(functionalTest)
     }
-}
-
-pluginBundle {
-    website = "https://github.com/fbarthelery/gradle-avdl"
-    vcsUrl = "https://github.com/fbarthelery/gradle-avdl"
-    tags = listOf("android", "devices", "testing", "integrationTesting")
 }
