@@ -29,7 +29,9 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 import java.time.Duration
 
 interface FlydroidService {
@@ -38,6 +40,9 @@ interface FlydroidService {
 
     @POST("stop")
     suspend fun stop(@Body stopRequest: StopRequest): VirtualDevice?
+
+    @GET("device/{deviceId}")
+    suspend fun findVirtualDevice(@Path("deviceId") deviceId: String): VirtualDevice?
 }
 
 @OptIn(UnstableDefault::class)
@@ -68,7 +73,6 @@ fun createFlydroidService(serviceUrl: String, flydroidApiKey: String? = null) : 
 data class StartRequest(
         val name: String,
         val image: String,
-        val email: String,
         val adbkey: String
 )
 
