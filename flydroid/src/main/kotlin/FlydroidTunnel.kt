@@ -34,6 +34,7 @@ import okhttp3.*
 import okio.*
 import org.apache.log4j.LogManager
 import org.slf4j.LoggerFactory
+import retrofit2.HttpException
 import java.net.ServerSocket
 import java.net.Socket
 import java.util.*
@@ -41,25 +42,38 @@ import java.util.*
 private var tunnelId: Long = 0
 
 
-// TODO make tunnel ask for a specific nomad allocation (by name)
-// so that we can stop the tunnel if the allocation is stopped
-fun main(args: Array<String>) {
+suspend fun main(args: Array<String>) {
     val parser = ArgParser("wstunnel")
     val tunnelServer by parser.argument(ArgType.String, "tunnelEndpoint",
             "wstunnel server endpoint url")
     val tunnelDesc by parser.option(ArgType.String, "localToRemote", "L",
-            "tunnel local to remote PORT:HOST:PORT").required()
+            "tunnel local to remote PORT:HOST:PORT")
+    val flydroidTunnelDesc by parser.option(ArgType.String, "localToFlydroid", "F",
+            """tunnel local to remote flydroid device PORT:flydroid-id:service where
+                | flydroid-id is the id of your device
+                | service is one of adb, console, grpc
+            """.trimMargin())
 
     val apiKey by parser.option(ArgType.String, "apiKey", "k",
             "Api key for the Flydroid service")
 
     parser.parse(args)
 
-    val destination = with(tunnelDesc) {
-        val parts = split(":").takeLast(2)
+    check(tunnelDesc == null || flydroidTunnelDesc == null) { "Option -L and -F are mutually exclusive"}
+    val flydroidTunnelDestination = flydroidTunnelDesc?.let {
+        val parts = it.split(":").takeLast(2)
+        FlydroidDestination(parts[0], parts[1])
+    }
+
+    val ipDestination = tunnelDesc?.let {
+        val parts = it.split(":").takeLast(2)
         Destination("tcp", parts[0], parts[1].toInt())
     }
-    val localPort = with(tunnelDesc) {
+
+    val destinationResolver = createDestinationResolver(ipDestination, flydroidTunnelDestination, tunnelServer, apiKey)
+
+    val localPortDesc = if (ipDestination != null) tunnelDesc else flydroidTunnelDesc
+    val localPort = with(localPortDesc!!) {
         val parts = split(":")
         if (parts.size >= 3) {
             parts[0].toInt()
@@ -69,20 +83,85 @@ fun main(args: Array<String>) {
 
     ServerSocket(localPort).use { serverSocket ->
         println("Listening port: ${serverSocket.localPort}")
-        println("Destination: $destination")
         println("Via: $tunnelServer")
         while (true) {
+            val destination = destinationResolver.getDestination()
+            if (destination == null) {
+                println("Destination is stopped. Quit")
+                break
+            }
+            println("Destination: $destination")
             val socket = serverSocket.accept()
             val tunnel = Tunnel("${tunnelId++}", socket, tunnelServer.trim('/'), destination, apiKey)
             println("accept a connection. start tunnel ${tunnel.tunnelId}")
             tunnel.run()
         }
     }
-
 }
 
+private interface DestinationResolver {
+    suspend fun getDestination(): Destination?
+}
 
-private data class Destination(
+private fun createDestinationResolver(destination: Destination?, flydroidTunnelDestination: FlydroidDestination?,
+                              tunnelServer: String, apiKey: String?
+): DestinationResolver {
+    return if (destination != null) {
+        FixedDestinationResolver(destination)
+    } else {
+        FlydroidDestinationResolver(tunnelServer, flydroidTunnelDestination!!, apiKey)
+    }
+}
+
+private class FixedDestinationResolver(
+        private val destination: Destination
+): DestinationResolver {
+    override suspend fun getDestination(): Destination? = destination
+}
+
+private class FlydroidDestinationResolver(
+        private val tunnelServer: String,
+        private val flydroidDestination: FlydroidDestination,
+        private val apiKey: String? = null
+): DestinationResolver {
+
+    val flydroidService by lazy {
+        val tunnelServerUrl = when {
+            tunnelServer.startsWith("ws://") -> tunnelServer.replaceFirst("ws://", "http://")
+            tunnelServer.startsWith("wss://") -> tunnelServer.replaceFirst("wss://", "https://")
+            else -> tunnelServer
+        }
+        createFlydroidService(tunnelServerUrl, apiKey)
+    }
+
+    override suspend fun getDestination(): Destination? = withContext(Dispatchers.IO) {
+        try {
+            val device = flydroidService.findVirtualDevice(flydroidDestination.id).body()
+            device?.let {
+                when (flydroidDestination.service) {
+                    FlydroidDestination.Service.ADB -> Destination("tcp", it.ip, it.adbPort)
+                    FlydroidDestination.Service.CONSOLE -> Destination("tcp", it.ip, it.consolePort)
+                    FlydroidDestination.Service.GRPC -> Destination("tcp", it.ip, it.grpcPort)
+                }
+            }
+        } catch (e: HttpException) {
+            null
+        }
+    }
+}
+
+private data class FlydroidDestination(
+        val id: String,
+        val service: Service
+) {
+    enum class Service {
+        ADB, CONSOLE, GRPC
+    }
+
+    constructor(id: String, service: String) : this(id, Service.valueOf(service.toUpperCase()))
+}
+
+internal data class Destination(
         val protocol: String,
         val host: String,
         val port: Int
@@ -211,7 +290,7 @@ private class Tunnel(
         webSocket?.close(1000, null)
         @Suppress("BlockingMethodInNonBlockingContext")
         local.close()
-        cancel()
+        this@Tunnel.cancel()
     }
 
     private fun connectToDestination() {
