@@ -27,8 +27,6 @@ import com.geekorum.gradle.avdl.VirtualDeviceController
 import com.geekorum.gradle.avdl.VirtualDeviceDefinition
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
@@ -37,15 +35,12 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
 import okio.Buffer
-import okio.ByteString.Companion.encodeUtf8
-import okio.Okio
 import okio.buffer
 import okio.source
 import org.gradle.api.file.FileCollection
 import org.gradle.api.model.ObjectFactory
 import org.gradle.process.ExecOperations
 import org.slf4j.LoggerFactory
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.net.Socket
@@ -130,14 +125,12 @@ internal class FlydroidController(
         val request = StartRequest(
                 name = configuration.name,
                 image = configuration.image!!,
-                //TODO remove once server removed it
-                email = "",
                 adbkey = configuration.adbkey!!)
         val response = service.start(request)
         LOGGER.trace("api response $response")
 
         val adbConnectString = if (configuration.useTunnel) {
-            val tunnelString = "${response.ip}:${response.adbPort}"
+            val tunnelString = "${response.id}:adb"
             val tunnelServer = requireNotNull(configuration.url)
             val command = buildList<String> {
                 this += listOf("java", "-cp", classpath.asPath,
@@ -145,7 +138,7 @@ internal class FlydroidController(
                 configuration.flydroidKey?.let {
                     this += listOf("-k", it)
                 }
-                this += listOf("-L", tunnelString,
+                this += listOf("-F", tunnelString,
                         tunnelServer)
             }
 
@@ -206,17 +199,11 @@ internal class FlydroidController(
 
     override fun stopDevice() = runBlocking {
         val response = service.stop(configuration.name)
+        LOGGER.trace("api response $response, ${response.body()}")
         check(response.isSuccessful) { "failed to stop device. Server answer: $response" }
         val virtualDevice = response.body()
-        if (virtualDevice != null) {
-            // TODO get the device info, so that we can disconnect the correct adb
-            val connectionString = if (configuration.useTunnel) {
-                //TODO
-                // should not be needed if we make the tunnel close automatically
-                "TODO"
-            } else {
-                "${virtualDevice.ip}:${virtualDevice.adbPort}"
-            }
+        if (virtualDevice != null && !configuration.useTunnel) {
+            val connectionString = "${virtualDevice.ip}:${virtualDevice.adbPort}"
 
             execOperations.exec {
                 // the device may be disconnected automatically before
@@ -224,7 +211,6 @@ internal class FlydroidController(
                 commandLine(adb, "disconnect", connectionString)
             }
         }
-        LOGGER.trace("api response $virtualDevice")
     }
 }
 
