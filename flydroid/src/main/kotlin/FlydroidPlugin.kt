@@ -48,6 +48,7 @@ class FlydroidPlugin : Plugin<Project>{
                 url = target.uri("https://kotlin.bintray.com/kotlinx")
             }
             google()
+            gradlePluginPortal()
         }
     }
 }
