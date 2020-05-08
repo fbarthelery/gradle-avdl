@@ -36,5 +36,3 @@ fun adbRemote(deviceDefinition: VirtualDeviceDefinition, fn: Closure<*>): Device
         fn()
     }
 }
-
-fun skipFirst(a: String, skip:Int) = a.subSequence(skip, a.length)
