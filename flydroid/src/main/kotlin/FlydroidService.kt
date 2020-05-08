@@ -27,6 +27,7 @@ import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -41,8 +42,8 @@ interface FlydroidService {
     @POST("stop")
     suspend fun stop(@Body stopRequest: StopRequest): VirtualDevice?
 
-    @GET("device/{deviceId}")
-    suspend fun findVirtualDevice(@Path("deviceId") deviceId: String): VirtualDevice?
+    @GET("devices/{deviceId}")
+    suspend fun findVirtualDevice(@Path("deviceId") deviceId: String): Response<VirtualDevice?>
 }
 
 @OptIn(UnstableDefault::class)
