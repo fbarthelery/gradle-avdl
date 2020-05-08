@@ -61,11 +61,13 @@ gradlePlugin {
     val flydroid by plugins.registering {
         id = "com.geekorum.gradle.avdl.providers.flydroid"
         implementationClass = "com.geekorum.gradle.avdl.providers.flydroid.FlydroidPlugin"
+        displayName = "Flydroid provider for the Gradle-avdl plugin"
+        description = "Launch Android Virtual Devices during your build"
     }
 }
 
 pluginBundle {
-    website = "https://github.com/fbarthelery/gradle-avdl"
+    website = "https://github.com/fbarthelery/gradle-avdl/tree/master/flydroid"
     vcsUrl = "https://github.com/fbarthelery/gradle-avdl"
     tags = listOf("android", "devices", "testing", "integrationTesting")
 }
