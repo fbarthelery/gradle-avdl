@@ -1,0 +1,3 @@
+moduleName=com.geekorum.gradle.avdl.providers.flydroid
+moduleVersion=0.0.1
+extensionClasses=com.geekorum.gradle.avdl.providers.flydroid.GroovyExtensionsKt

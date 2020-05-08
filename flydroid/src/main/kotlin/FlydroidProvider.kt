@@ -25,6 +25,7 @@ import com.geekorum.gradle.avdl.DeviceProviderPlugin
 import com.geekorum.gradle.avdl.DeviceSetup
 import com.geekorum.gradle.avdl.VirtualDeviceController
 import com.geekorum.gradle.avdl.VirtualDeviceDefinition
+import groovy.lang.Closure
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -45,6 +46,7 @@ import java.io.File
 import java.io.IOException
 import java.net.Socket
 import javax.inject.Inject
+import com.geekorum.gradle.avdl.providers.flydroid.flydroid as groovyFlydroid
 
 private val LOGGER = LoggerFactory.getLogger("Flydroid")
 
@@ -53,9 +55,18 @@ open class FlydroidProvider @Inject constructor(
         objectFactory: ObjectFactory,
         private val execOperations: ExecOperations
 ) : DeviceProviderPlugin(objectFactory) {
+
     override fun createController(configuration: ByteArray): VirtualDeviceController {
         val config = FlydroidConfiguration.fromByteArray(configuration)
         return FlydroidController(execOperations, avdlClasspath, config)
+    }
+
+    // for Groovy support
+    companion object {
+        @JvmStatic
+        fun flydroid(deviceDefinition: VirtualDeviceDefinition, fn: Closure<*>): DeviceSetup {
+            return groovyFlydroid(deviceDefinition, fn)
+        }
     }
 }
 
