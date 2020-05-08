@@ -38,7 +38,7 @@ class FlydroidPlugin : Plugin<Project>{
         target.apply<AvdlPlugin>()
 
         target.dependencies {
-            add("avdl","com.geekorum.gradle.avdl:flydroid:0.0.1-SNAPSHOT" )
+            add("avdl","com.geekorum.gradle.avdl:flydroid:0.0.2" )
             add("avdl","org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5" )
         }
 
