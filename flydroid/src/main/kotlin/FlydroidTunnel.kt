@@ -81,20 +81,22 @@ suspend fun main(args: Array<String>) {
             0
     }
 
-    ServerSocket(localPort).use { serverSocket ->
-        println("Listening port: ${serverSocket.localPort}")
-        println("Via: $tunnelServer")
-        while (true) {
-            val destination = destinationResolver.getDestination()
-            if (destination == null) {
-                println("Destination is stopped. Quit")
-                break
+    withContext(Dispatchers.IO) {
+        ServerSocket(localPort).use { serverSocket ->
+            println("Listening port: ${serverSocket.localPort}")
+            println("Via: $tunnelServer")
+            while (true) {
+                val destination = destinationResolver.getDestination()
+                if (destination == null) {
+                    println("Destination is stopped. Quit")
+                    break
+                }
+                println("Destination: $destination")
+                val socket = serverSocket.accept()
+                val tunnel = Tunnel("${tunnelId++}", socket, tunnelServer.trim('/'), destination, apiKey)
+                println("accept a connection. start tunnel ${tunnel.tunnelId}")
+                tunnel.run()
             }
-            println("Destination: $destination")
-            val socket = serverSocket.accept()
-            val tunnel = Tunnel("${tunnelId++}", socket, tunnelServer.trim('/'), destination, apiKey)
-            println("accept a connection. start tunnel ${tunnel.tunnelId}")
-            tunnel.run()
         }
     }
 }

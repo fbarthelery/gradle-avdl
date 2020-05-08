@@ -48,6 +48,7 @@ import javax.inject.Inject
 
 private val LOGGER = LoggerFactory.getLogger("Flydroid")
 
+@Suppress("UnstableApiUsage")
 open class FlydroidProvider @Inject constructor(
         objectFactory: ObjectFactory,
         private val execOperations: ExecOperations
@@ -106,6 +107,7 @@ class FlydroidConfiguration(
     }
 }
 
+@Suppress("UnstableApiUsage")
 internal class FlydroidController(
         private val execOperations: ExecOperations,
         private val classpath: FileCollection,
@@ -129,42 +131,44 @@ internal class FlydroidController(
         val response = service.start(request)
         LOGGER.trace("api response $response")
 
-        val adbConnectString = if (configuration.useTunnel) {
-            val tunnelString = "${response.id}:adb"
-            val tunnelServer = requireNotNull(configuration.url)
-            val command = buildList<String> {
-                this += listOf("java", "-cp", classpath.asPath,
-                        "com.geekorum.gradle.avdl.providers.flydroid.FlydroidTunnelKt")
-                configuration.flydroidKey?.let {
-                    this += listOf("-k", it)
+        val adbConnectString = withContext(Dispatchers.IO) {
+            if (configuration.useTunnel) {
+                val tunnelString = "${response.id}:adb"
+                val tunnelServer = requireNotNull(configuration.url)
+                val command = buildList<String> {
+                    this += listOf("java", "-cp", classpath.asPath,
+                            "com.geekorum.gradle.avdl.providers.flydroid.FlydroidTunnelKt")
+                    configuration.flydroidKey?.let {
+                        this += listOf("-k", it)
+                    }
+                    this += listOf("-F", tunnelString,
+                            tunnelServer)
                 }
-                this += listOf("-F", tunnelString,
-                        tunnelServer)
-            }
 
-            // exec wait for process to finish, so we can't use it. we need to run the tunnel
-            // as a separate process
-            val process = ProcessBuilder()
-                    .command(command)
-                    .redirectOutput(ProcessBuilder.Redirect.PIPE)
-                    .start()
+                // exec wait for process to finish, so we can't use it. we need to run the tunnel
+                // as a separate process
+                val process = ProcessBuilder()
+                        .command(command)
+                        .redirectOutput(ProcessBuilder.Redirect.PIPE)
+                        .start()
 
-            val processOutput = flow {
-                process.inputStream.source().buffer().use { buffer ->
-                    do {
-                        val line = buffer.readUtf8Line()
-                        line?.let { emit(it) }
-                    } while (line != null)
+                val processOutput = flow {
+                    process.inputStream.source().buffer().use { buffer ->
+                        do {
+                            val line = buffer.readUtf8Line()
+                            line?.let { emit(it) }
+                        } while (line != null)
+                    }
                 }
+
+                val listeningPort = processOutput.first {
+                    it.startsWith("Listening port:")
+                }.split(":")[1].trim()
+
+                "localhost:$listeningPort"
+            } else {
+                "${response.ip}:${response.adbPort}"
             }
-
-            val listeningPort = processOutput.first {
-                it.startsWith("Listening port:")
-            }.split(":")[1].trim()
-
-            "localhost:$listeningPort"
-        } else {
-            "${response.ip}:${response.adbPort}"
         }
 
         // TODO need to find a way to know when the allocation is started ?
@@ -183,7 +187,7 @@ internal class FlydroidController(
         //TODO add some timeout for the wait operations ?
     }
 
-    private suspend fun waitForBootComplete(adbConnectString: String) {
+    private suspend fun waitForBootComplete(adbConnectString: String) = withContext(Dispatchers.IO) {
         do {
             val collectedOuput = Buffer()
             execOperations.exec {
