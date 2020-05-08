@@ -205,8 +205,9 @@ internal class FlydroidController(
     }
 
     override fun stopDevice() = runBlocking {
-        val request = StopRequest(configuration.name)
-        val virtualDevice = service.stop(request)
+        val response = service.stop(configuration.name)
+        check(response.isSuccessful) { "failed to stop device. Server answer: $response" }
+        val virtualDevice = response.body()
         if (virtualDevice != null) {
             // TODO get the device info, so that we can disconnect the correct adb
             val connectionString = if (configuration.useTunnel) {
