@@ -44,7 +44,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.1")
     "functionalTestRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.7.1")
 
-    implementation("com.android.tools.build:gradle:3.6.3")
+    implementation("com.android.tools.build:gradle:4.1.3")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
 
     api(project(":plugin"))
