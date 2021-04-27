@@ -23,21 +23,31 @@ package com.geekorum.gradle.avdl.providers.flydroid
 
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
+import org.gradle.util.GradleVersion
+import org.junit.jupiter.api.io.TempDir
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import java.io.File
-import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class FlydroidPluginFunctionalTest {
-    @get:Rule
-    val projectDir = TemporaryFolder()
+    companion object {
+        @JvmStatic
+        fun gradleVersionProvider() = listOf(
+                GradleVersion.version("6.3"),
+                GradleVersion.current()
+        )
+    }
 
-    @Test
-    fun `can create device`() {
-        projectDir.root.resolve("settings.gradle")
-        projectDir.root.resolve("build.gradle.kts").writeText("""
+    @TempDir
+    lateinit var projectDir: File
+
+    @ParameterizedTest
+    @MethodSource("gradleVersionProvider")
+    fun `can create device`(gradleVersion: GradleVersion) {
+        projectDir.resolve("settings.gradle")
+        projectDir.resolve("build.gradle.kts").writeText("""
             import com.geekorum.gradle.avdl.providers.flydroid.flydroid
 
             plugins {
@@ -68,6 +78,7 @@ class FlydroidPluginFunctionalTest {
 
         // Run the build
         val result = GradleRunner.create()
+                .withGradleVersion(gradleVersion.version)
                 .forwardOutput()
                 .withPluginClasspath().apply {
                     withPluginClasspath(pluginClasspath + listOf(
@@ -79,7 +90,7 @@ class FlydroidPluginFunctionalTest {
                     ))
                 }
                 .withArguments(":devices")
-                .withProjectDir(projectDir.root)
+                .withProjectDir(projectDir)
                 .build()
 
         assertEquals(TaskOutcome.SUCCESS, result.task(":devices")!!.outcome)
@@ -90,10 +101,11 @@ class FlydroidPluginFunctionalTest {
         }
     }
 
-    @Test
-    fun `can create device in groovy`() {
-        projectDir.root.resolve("settings.gradle")
-        projectDir.root.resolve("build.gradle").writeText("""
+    @ParameterizedTest
+    @MethodSource("gradleVersionProvider")
+    fun `can create device in groovy`(gradleVersion: GradleVersion) {
+        projectDir.resolve("settings.gradle")
+        projectDir.resolve("build.gradle").writeText("""
             import com.geekorum.gradle.avdl.providers.flydroid.FlydroidProvider
 
             plugins {
@@ -126,10 +138,11 @@ class FlydroidPluginFunctionalTest {
 
         // Run the build
         val result = GradleRunner.create()
+                .withGradleVersion(gradleVersion.version)
                 .forwardOutput()
                 .withPluginClasspath()
                 .withArguments("--stacktrace", ":devices")
-                .withProjectDir(projectDir.root)
+                .withProjectDir(projectDir)
                 .build()
 
         assertEquals(TaskOutcome.SUCCESS, result.task(":devices")!!.outcome)
