@@ -23,9 +23,11 @@ package com.geekorum.gradle.avdl
 
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
+import org.gradle.util.GradleVersion
 import org.junit.jupiter.api.io.TempDir
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import java.io.File
-import kotlin.test.Test
 import kotlin.test.assertEquals
 
 /**
@@ -35,8 +37,9 @@ class AvdlPluginFunctionalTest {
     @TempDir
     lateinit var projectDir: File
 
-    @Test
-    fun `can run task`() {
+    @ParameterizedTest
+    @MethodSource("gradleVersionProvider")
+    fun `can run task`(gradleVersion: GradleVersion) {
         projectDir.resolve("settings.gradle").writeText("")
         projectDir.resolve("build.gradle").writeText("""
             plugins {
@@ -46,6 +49,7 @@ class AvdlPluginFunctionalTest {
 
         // Run the build
         val result = GradleRunner.create()
+                .withGradleVersion(gradleVersion.version)
                 .forwardOutput()
                 .withPluginClasspath()
                 .withArguments(":tasks")
@@ -56,8 +60,9 @@ class AvdlPluginFunctionalTest {
         assertEquals(result.task(":tasks")!!.outcome, TaskOutcome.SUCCESS)
     }
 
-    @Test
-    fun `can create some virtual devices definition`() {
+    @ParameterizedTest
+    @MethodSource("gradleVersionProvider")
+    fun `can create some virtual devices definition`(gradleVersion: GradleVersion) {
         projectDir.resolve("settings.gradle").writeText("")
         projectDir.resolve("build.gradle").writeText("""
             plugins {
@@ -74,6 +79,7 @@ class AvdlPluginFunctionalTest {
 
         // Run the build
         val result = GradleRunner.create()
+                .withGradleVersion(gradleVersion.version)
                 .forwardOutput()
                 .withPluginClasspath()
                 .withArguments(":tasks")
@@ -81,6 +87,13 @@ class AvdlPluginFunctionalTest {
 
         // Verify the result
         assertEquals(result.task(":tasks")!!.outcome, TaskOutcome.SUCCESS)
+    }
+
+    companion object {
+        @JvmStatic
+        fun gradleVersionProvider() = listOf(
+                GradleVersion.current()
+        )
     }
 
 }
