@@ -25,6 +25,9 @@ plugins {
     id("com.gradle.plugin-publish")
 }
 
+// Add a source set for the functional test suite
+val functionalTest: SourceSet by sourceSets.creating
+
 dependencies {
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
@@ -36,7 +39,10 @@ dependencies {
     testImplementation(kotlin("test"))
 
     // Use the Kotlin JUnit integration.
-    testImplementation(kotlin("test-junit"))
+    testImplementation(kotlin("test-junit5"))
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.1")
+    "functionalTestRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.7.1")
 }
 
 gradlePlugin {
@@ -55,21 +61,19 @@ pluginBundle {
     tags = listOf("android", "devices", "testing", "integrationTesting")
 }
 
-
-// Add a source set for the functional test suite
-val functionalTestSourceSet = sourceSets.create("functionalTest") {
-}
-
-gradlePlugin.testSourceSets(functionalTestSourceSet)
+gradlePlugin.testSourceSets(functionalTest)
 configurations.getByName("functionalTestImplementation").extendsFrom(configurations.getByName("testImplementation"))
 
 
 tasks {
+    withType<Test> {
+        useJUnitPlatform()
+    }
 
     // Add a task to run the functional tests
     val functionalTest by creating(Test::class) {
-        testClassesDirs = functionalTestSourceSet.output.classesDirs
-        classpath = functionalTestSourceSet.runtimeClasspath
+        testClassesDirs = functionalTest.output.classesDirs
+        classpath = functionalTest.runtimeClasspath
     }
 
     val check by getting(Task::class) {
