@@ -47,7 +47,7 @@ dependencies {
     "functionalTestRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.7.1")
 
     api(project(":plugin"))
-    implementation("com.android.tools.build:gradle:3.6.3")
+    implementation("com.android.tools.build:gradle:4.1.3")
 
     implementation("com.squareup.retrofit2:retrofit:2.8.1")
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
