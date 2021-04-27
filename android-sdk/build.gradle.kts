@@ -37,7 +37,7 @@ dependencies {
     testImplementation(kotlin("test-junit"))
 
     implementation("com.android.tools.build:gradle:3.6.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
 
     api(project(":plugin"))
 }

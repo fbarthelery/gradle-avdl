@@ -27,20 +27,17 @@ import com.geekorum.gradle.avdl.VirtualDeviceController
 import com.geekorum.gradle.avdl.VirtualDeviceDefinition
 import groovy.lang.Closure
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
 import org.gradle.api.model.ObjectFactory
 import org.gradle.process.ExecOperations
 import javax.inject.Inject
 import com.geekorum.gradle.avdl.providers.androidsdk.adbRemote as groovyAdbRemote
 
-@Suppress("UnstableApiUsage", "UnstableApiUsage")
 open class AdbRemoteProvider @Inject constructor(
         objectFactory: ObjectFactory,
         private val execOperations: ExecOperations
 ) : DeviceProviderPlugin(objectFactory) {
 
-    @OptIn(ExperimentalStdlibApi::class)
     override fun createController(configuration: ByteArray): VirtualDeviceController {
         val config = AdbRemoteConfiguration.fromByteArray(configuration)
         return AdbRemoteController(execOperations, config)
@@ -63,7 +60,6 @@ fun VirtualDeviceDefinition.adbRemote(configure: AdbRemoteConfiguration.() -> Un
     return DeviceSetup(AdbRemoteProvider::class.qualifiedName!!, configuration.toByteArray())
 }
 
-@Suppress("UnstableApiUsage")
 private class AdbRemoteController(
         private val execOperations: ExecOperations,
         private val config: AdbRemoteConfiguration
@@ -91,20 +87,18 @@ class AdbRemoteConfiguration {
     internal val connectString
         get() = "$host:$port"
 
-    @OptIn(ExperimentalStdlibApi::class, UnstableDefault::class)
     fun toByteArray(): ByteArray {
-        val json = Json.stringify(serializer(), this)
+        val json = Json.encodeToString(serializer(), this)
         return json.encodeToByteArray()
     }
 
     companion object {
-        @OptIn(ExperimentalStdlibApi::class, UnstableDefault::class)
         fun fromByteArray(blob: ByteArray): AdbRemoteConfiguration {
             // the bytes to short conversion may add an addition \0 at the end
             val json = blob.decodeToString().trim {
                 it.isWhitespace() || it == '\u0000'
             }
-            return Json.parse(serializer(), json)
+            return Json.decodeFromString(serializer(), json)
         }
     }
 }
