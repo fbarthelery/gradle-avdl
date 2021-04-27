@@ -24,8 +24,8 @@ import com.geekorum.build.SourceLicenseCheckerPlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.3.70" apply false
-    kotlin("plugin.serialization") version "1.3.70" apply false
+    kotlin("jvm") version "1.4.31" apply false
+    kotlin("plugin.serialization") version "1.4.31" apply false
     `maven-publish`
     id("com.gradle.plugin-publish") version "0.11.0" apply false
 }
@@ -36,7 +36,7 @@ allprojects {
     version = "0.0.3-SNAPSHOT"
 
     repositories {
-        jcenter()
+        mavenCentral()
     }
 
     apply<SourceLicenseCheckerPlugin>()

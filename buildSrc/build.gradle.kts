@@ -25,14 +25,9 @@ plugins {
 
 version = "1.0"
 
-kotlinDslPluginOptions {
-    experimentalWarning.set(false)
-}
-
-
 repositories {
     gradlePluginPortal()
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
