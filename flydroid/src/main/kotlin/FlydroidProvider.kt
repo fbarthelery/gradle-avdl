@@ -33,7 +33,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
 import okio.Buffer
 import okio.buffer
@@ -50,7 +49,6 @@ import com.geekorum.gradle.avdl.providers.flydroid.flydroid as groovyFlydroid
 
 private val LOGGER = LoggerFactory.getLogger("Flydroid")
 
-@Suppress("UnstableApiUsage")
 open class FlydroidProvider @Inject constructor(
         objectFactory: ObjectFactory,
         private val execOperations: ExecOperations
@@ -91,9 +89,8 @@ class FlydroidConfiguration(
     var adbExecutable: String? = null
     var image: String? = null
 
-    @OptIn(ExperimentalStdlibApi::class, UnstableDefault::class)
     fun toByteArray() : ByteArray {
-        val json = Json.stringify(serializer(), this)
+        val json = Json.encodeToString(serializer(), this)
         return json.encodeToByteArray()
     }
 
@@ -107,18 +104,16 @@ class FlydroidConfiguration(
     }
 
     companion object {
-        @OptIn(ExperimentalStdlibApi::class, UnstableDefault::class)
         fun fromByteArray(blob: ByteArray): FlydroidConfiguration {
             // the bytes conversion may add an addition \0 at the end
             val json = blob.decodeToString().trim {
                 it.isWhitespace() || it == '\u0000'
             }
-            return Json.parse(serializer(), json)
+            return Json.decodeFromString(serializer(), json)
         }
     }
 }
 
-@Suppress("UnstableApiUsage")
 internal class FlydroidController(
         private val execOperations: ExecOperations,
         private val classpath: FileCollection,

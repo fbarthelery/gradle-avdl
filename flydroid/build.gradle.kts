@@ -44,8 +44,8 @@ dependencies {
     implementation("com.android.tools.build:gradle:3.6.3")
 
     implementation("com.squareup.retrofit2:retrofit:2.8.1")
-    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.5.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
     implementation("com.squareup.okhttp3:okhttp:4.6.0")
     implementation("com.squareup.okio:okio:2.6.0")
 

@@ -22,8 +22,8 @@
 package com.geekorum.gradle.avdl.providers.flydroid
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -43,7 +43,7 @@ interface FlydroidService {
     suspend fun findVirtualDevice(@Path("deviceId") deviceId: String): Response<VirtualDevice?>
 }
 
-@OptIn(UnstableDefault::class)
+@OptIn(ExperimentalSerializationApi::class)
 fun createFlydroidService(serviceUrl: String, flydroidApiKey: String? = null) : FlydroidService {
     val client = OkHttpClient().newBuilder()
             // service may wait for the allocation before answering
