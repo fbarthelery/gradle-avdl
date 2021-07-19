@@ -50,7 +50,6 @@ class FlydroidPluginTest {
         // Verify the result
         assertNotNull(project.repositories.named(DefaultRepositoryHandler.GOOGLE_REPO_NAME))
         assertNotNull(project.repositories.named(DefaultRepositoryHandler.GRADLE_PLUGIN_PORTAL_REPO_NAME))
-        assertNotNull(project.repositories.named("kotlinx"))
     }
 
     @Test

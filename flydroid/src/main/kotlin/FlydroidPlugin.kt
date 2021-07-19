@@ -43,10 +43,6 @@ class FlydroidPlugin : Plugin<Project>{
         }
 
         target.repositories {
-            maven {
-                name = "kotlinx"
-                url = target.uri("https://kotlin.bintray.com/kotlinx")
-            }
             google()
             gradlePluginPortal()
         }
