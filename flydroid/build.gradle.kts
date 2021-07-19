@@ -56,7 +56,7 @@ dependencies {
     implementation("com.squareup.okio:okio:2.6.0")
 
 
-    implementation(enforcedPlatform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.3.5"))
+    implementation(enforcedPlatform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.4.3"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
 
     implementation("org.jetbrains.kotlinx:kotlinx-cli:0.2.1")
