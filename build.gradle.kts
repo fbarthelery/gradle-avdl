@@ -24,10 +24,10 @@ import com.geekorum.build.SourceLicenseCheckerPlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.4.31" apply false
-    kotlin("plugin.serialization") version "1.4.31" apply false
+    kotlin("jvm") version "1.8.10" apply false
+    kotlin("plugin.serialization") version "1.8.10" apply false
     `maven-publish`
-    id("com.gradle.plugin-publish") version "0.11.0" apply false
+    id("com.gradle.plugin-publish") version "1.2.0" apply false
 }
 
 
@@ -49,13 +49,6 @@ allprojects {
                     this.url = uri("$rootDir/repo")
                 }
             }
-        }
-    }
-
-    tasks.withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = "1.8"
-            freeCompilerArgs = listOf("-Xopt-in=kotlin.RequiresOptIn")
         }
     }
 }

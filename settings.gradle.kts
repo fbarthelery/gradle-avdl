@@ -20,6 +20,10 @@
  * along with gradle-avdl.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+plugins {
+        id("org.gradle.toolchains.foojay-resolver-convention") version ("0.4.0")
+}
+
 rootProject.name = "gradle-avdl"
 include(":plugin",
         ":android-sdk",

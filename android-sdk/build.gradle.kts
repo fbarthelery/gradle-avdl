@@ -19,6 +19,9 @@
  * You should have received a copy of the GNU General Public License
  * along with gradle-avdl.  If not, see <http://www.gnu.org/licenses/>.
  */
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     `kotlin-dsl`
     `maven-publish`
@@ -30,6 +33,9 @@ repositories {
     google()
 }
 
+kotlin {
+    jvmToolchain(11)
+}
 
 // Add a source set for the functional test suite
 val functionalTest: SourceSet by sourceSets.creating
@@ -44,28 +50,25 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.1")
     "functionalTestRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.7.1")
 
-    implementation("com.android.tools.build:gradle:4.1.3")
+    implementation("com.android.tools.build:gradle:8.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
 
     api(project(":plugin"))
 }
 
 gradlePlugin {
+    website.set("https://github.com/fbarthelery/gradle-avdl/tree/master/android-sdk")
+    vcsUrl.set("https://github.com/fbarthelery/gradle-avdl")
+
     // Define the plugin
     val androidsdk by plugins.registering {
         id = "com.geekorum.gradle.avdl.providers.android-sdk"
         implementationClass = "com.geekorum.gradle.avdl.providers.androidsdk.AndroidSdkPlugin"
         displayName = "Android SDK provider for the Gradle-avdl plugin"
         description = "Launch Android Virtual Devices during your build"
+        tags.set(listOf("android", "devices", "testing", "integrationTesting"))
     }
 }
-
-pluginBundle {
-    website = "https://github.com/fbarthelery/gradle-avdl/tree/master/android-sdk"
-    vcsUrl = "https://github.com/fbarthelery/gradle-avdl"
-    tags = listOf("android", "devices", "testing", "integrationTesting")
-}
-
 
 
 gradlePlugin.testSourceSets(functionalTest)
@@ -86,5 +89,8 @@ tasks {
     val check by getting(Task::class) {
         // Run the functional tests as part of `check`
         dependsOn(functionalTest)
+    }
+    withType<KotlinCompile> {
+        compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
     }
 }

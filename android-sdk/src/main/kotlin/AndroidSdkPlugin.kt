@@ -23,7 +23,6 @@ package com.geekorum.gradle.avdl.providers.androidsdk
 
 import com.android.build.gradle.BaseExtension
 import com.geekorum.gradle.avdl.AvdlPlugin
-import com.google.common.base.Charsets
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply

@@ -33,6 +33,10 @@ repositories {
     google()
 }
 
+kotlin {
+    jvmToolchain(8)
+}
+
 // Add a source set for the functional test suite
 val functionalTest: SourceSet by sourceSets.creating
 
@@ -47,7 +51,7 @@ dependencies {
     "functionalTestRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.7.1")
 
     api(project(":plugin"))
-    implementation("com.android.tools.build:gradle:4.1.3")
+    implementation("com.android.tools.build:gradle:8.0.0")
 
     implementation("com.squareup.retrofit2:retrofit:2.8.1")
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
@@ -63,19 +67,17 @@ dependencies {
 }
 
 gradlePlugin {
+    website.set("https://github.com/fbarthelery/gradle-avdl/tree/master/flydroid")
+    vcsUrl.set("https://github.com/fbarthelery/gradle-avdl")
+
     // Define the plugin
     val flydroid by plugins.registering {
         id = "com.geekorum.gradle.avdl.providers.flydroid"
         implementationClass = "com.geekorum.gradle.avdl.providers.flydroid.FlydroidPlugin"
         displayName = "Flydroid provider for the Gradle-avdl plugin"
         description = "Launch Android Virtual Devices during your build"
+        tags.set(listOf("android", "devices", "testing", "integrationTesting"))
     }
-}
-
-pluginBundle {
-    website = "https://github.com/fbarthelery/gradle-avdl/tree/master/flydroid"
-    vcsUrl = "https://github.com/fbarthelery/gradle-avdl"
-    tags = listOf("android", "devices", "testing", "integrationTesting")
 }
 
 

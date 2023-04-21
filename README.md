@@ -13,7 +13,7 @@ Add the plugin in your plugins block
 
 ```
 plugins {
-    id("com.geekorum.gradle.avdl") version "0.0.1"
+    id("com.geekorum.gradle.avdl") version "0.0.2"
 }
 ```
 

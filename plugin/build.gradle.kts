@@ -25,6 +25,10 @@ plugins {
     id("com.gradle.plugin-publish")
 }
 
+kotlin {
+    jvmToolchain(8)
+}
+
 // Add a source set for the functional test suite
 val functionalTest: SourceSet by sourceSets.creating
 
@@ -47,19 +51,17 @@ dependencies {
 }
 
 gradlePlugin {
+    website.set("https://github.com/fbarthelery/gradle-avdl")
+    vcsUrl.set("https://github.com/fbarthelery/gradle-avdl")
+
     // Define the plugin
     val avdlPlugin by plugins.registering {
         id = "com.geekorum.gradle.avdl"
         displayName = "Plugin to launch Android Virtual Devices during build"
         implementationClass = "com.geekorum.gradle.avdl.AvdlPlugin"
         description = "Launch Android Virtual Devices during your build"
+        tags.set(listOf("android", "devices", "testing", "integrationTesting"))
     }
-}
-
-pluginBundle {
-    website = "https://github.com/fbarthelery/gradle-avdl"
-    vcsUrl = "https://github.com/fbarthelery/gradle-avdl"
-    tags = listOf("android", "devices", "testing", "integrationTesting")
 }
 
 gradlePlugin.testSourceSets(functionalTest)
