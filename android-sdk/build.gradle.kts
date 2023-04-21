@@ -50,7 +50,8 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.1")
     "functionalTestRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.7.1")
 
-    implementation("com.android.tools.build:gradle:8.0.0")
+    implementation("com.android.tools.build:gradle-api:8.0.0")
+    compileOnly("com.android.tools.build:gradle:8.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
 
     api(project(":plugin"))
@@ -76,6 +77,9 @@ configurations.getByName("functionalTestImplementation").extendsFrom(configurati
 
 
 tasks {
+    withType<KotlinCompile> {
+        compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
+    }
     withType<Test> {
         useJUnitPlatform()
     }
@@ -89,8 +93,5 @@ tasks {
     val check by getting(Task::class) {
         // Run the functional tests as part of `check`
         dependsOn(functionalTest)
-    }
-    withType<KotlinCompile> {
-        compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
     }
 }

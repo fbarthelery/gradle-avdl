@@ -19,6 +19,9 @@
  * You should have received a copy of the GNU General Public License
  * along with gradle-avdl.  If not, see <http://www.gnu.org/licenses/>.
  */
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     `kotlin-dsl`
     `maven-publish`
@@ -34,7 +37,7 @@ repositories {
 }
 
 kotlin {
-    jvmToolchain(8)
+    jvmToolchain(11)
 }
 
 // Add a source set for the functional test suite
@@ -51,7 +54,8 @@ dependencies {
     "functionalTestRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.7.1")
 
     api(project(":plugin"))
-    implementation("com.android.tools.build:gradle:8.0.0")
+    implementation("com.android.tools.build:gradle-api:8.0.0")
+    compileOnly("com.android.tools.build:gradle:8.0.0")
 
     implementation("com.squareup.retrofit2:retrofit:2.8.1")
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
@@ -86,6 +90,9 @@ configurations.getByName("functionalTestImplementation").extendsFrom(configurati
 
 
 tasks {
+    withType<KotlinCompile> {
+        compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
+    }
     withType<Test> {
         useJUnitPlatform()
     }

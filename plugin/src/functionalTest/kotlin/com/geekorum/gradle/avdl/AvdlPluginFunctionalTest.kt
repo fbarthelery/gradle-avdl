@@ -92,8 +92,10 @@ class AvdlPluginFunctionalTest {
     companion object {
         @JvmStatic
         fun gradleVersionProvider() = listOf(
-                GradleVersion.version("6.3"),
-                GradleVersion.current()
+            GradleVersion.version("7.3"),
+            GradleVersion.version("7.6"),
+            GradleVersion.version("8.0.2"),
+            GradleVersion.current()
         )
     }
 

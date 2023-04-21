@@ -30,6 +30,8 @@ import org.junit.jupiter.params.provider.MethodSource
 import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.test.Test
+import kotlin.test.Ignore
 
 class FlydroidPluginFunctionalTest {
     companion object {
@@ -150,6 +152,79 @@ class FlydroidPluginFunctionalTest {
             result.output.contains("""name test
             |plugin com.geekorum.gradle.avdl.providers.flydroid.FlydroidProvider
             """.trimMargin())
+        }
+    }
+
+    @Ignore("Needs to run with java 17")
+    @Test
+    fun `can create device with android plugin`() {
+        projectDir.resolve("settings.gradle.kts").writeText("""
+            pluginManagement {
+                repositories {
+                    gradlePluginPortal()
+                    mavenCentral()
+                    google()
+                }
+            }
+            """
+        )
+        projectDir.resolve("build.gradle.kts").writeText("""
+            import com.geekorum.gradle.avdl.providers.flydroid.flydroid
+
+            plugins {
+                id("com.android.application") version "8.0.0"
+                id("com.geekorum.gradle.avdl.providers.flydroid")
+            }
+
+            android {
+                namespace = "com.geekorum.gradle.avdl.testproject.android"
+                compileSdk = 33
+            }
+
+            avdl {
+                devices {
+                    register("test") {
+                        setup = flydroid {
+                            url = "https://flydroid.example.com"
+                            flydroidKey = "my api key"
+                            image = "android-n"
+                            useTunnel = true
+                        }
+                    }
+                }
+            }
+
+            tasks.register("devices") {
+                doLast {
+                    val device = avdl.devices["test"]
+                    println("name ${'$'}{device.name}")
+                    println("plugin ${'$'}{device.setup?.deviceProviderPlugin}")
+                }
+            }
+        """)
+
+        // Run the build
+        val result = GradleRunner.create()
+            .withGradleVersion(GradleVersion.current().version)
+            .forwardOutput()
+            .withPluginClasspath().apply {
+                withPluginClasspath(pluginClasspath + listOf(
+                    // weird issue: plugin is not found during compilation of gradle kotlin script.
+                    // but it is found if we slightly modify its path
+                    with(pluginClasspath.first { it.name.matches("""plugin-.*\.jar""".toRegex()) }) {
+                        File(parent, "../${parentFile.name}/$name")
+                    }
+                ))
+            }
+            .withArguments(":devices")
+            .withProjectDir(projectDir)
+            .build()
+
+        assertEquals(TaskOutcome.SUCCESS, result.task(":devices")!!.outcome)
+        assertTrue {
+            result.output.contains("""name test
+                |plugin com.geekorum.gradle.avdl.providers.flydroid.FlydroidProvider
+                """.trimMargin())
         }
     }
 

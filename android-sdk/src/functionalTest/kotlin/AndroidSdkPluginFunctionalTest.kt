@@ -28,6 +28,8 @@ import org.junit.jupiter.api.io.TempDir
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import java.io.File
+import kotlin.test.Ignore
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -151,5 +153,75 @@ class AndroidSdkPluginFunctionalTest {
         }
     }
 
+    @Ignore("Needs to run with java 17")
+    @Test
+    fun `can create device with android plugin`() {
+        projectDir.resolve("settings.gradle.kts").writeText("""
+            pluginManagement {
+                repositories {
+                    gradlePluginPortal()
+                    mavenCentral()
+                    google()
+                }
+            }
+            """
+        )
+        projectDir.resolve("build.gradle.kts").writeText("""
+            import com.geekorum.gradle.avdl.providers.androidsdk.adbRemote
+
+            plugins {
+                id("com.android.application") version "8.0.0"
+                id("com.geekorum.gradle.avdl.providers.android-sdk")
+            }
+
+            android {
+                namespace = "com.geekorum.gradle.avdl.testproject.android"
+                compileSdk = 33
+            }
+
+            avdl {
+                devices {
+                    register("test") {
+                        setup = adbRemote {
+                            host = "192.168.1.42"
+                            port = 4242
+                        }
+                    }
+                }
+            }
+
+            tasks.register("devices") {
+                doLast {
+                    val device = avdl.devices["test"]
+                    println("name ${'$'}{device.name}")
+                    println("plugin ${'$'}{device.setup?.deviceProviderPlugin}")
+                }
+            }
+        """)
+
+        // Run the build
+        val result = GradleRunner.create()
+            .withGradleVersion(GradleVersion.current().version)
+            .forwardOutput()
+            .withPluginClasspath().apply {
+                withPluginClasspath(pluginClasspath + listOf(
+                    // weird issue: plugin is not found during compilation of gradle kotlin script.
+                    // but it is found if we slightly modify its path
+                    with(pluginClasspath.first { it.name.matches("""plugin-.*\.jar""".toRegex()) }) {
+                        File(parent, "../${parentFile.name}/$name")
+                    }
+                ))
+            }
+            .withArguments(":devices")
+            .withProjectDir(projectDir)
+            .build()
+
+        assertEquals(TaskOutcome.SUCCESS, result.task(":devices")!!.outcome)
+        assertTrue {
+            result.output.contains("""name test
+            |plugin com.geekorum.gradle.avdl.providers.androidsdk.AdbRemoteProvider
+            """.trimMargin())
+        }
+    }
 
 }

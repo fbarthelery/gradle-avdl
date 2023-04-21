@@ -22,6 +22,7 @@
 package com.geekorum.gradle.avdl.providers.androidsdk
 
 import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.BasePlugin
 import com.geekorum.gradle.avdl.AvdlPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -37,17 +38,21 @@ class AndroidSdkPlugin : Plugin<Project>{
 }
 
 internal fun findAdb(project: Project): File? {
-    // first try to get it from the android plugin
-    project.extensions.findByType(BaseExtension::class.java)?.let {
-        return it.adbExecutable
+    if (project.plugins.hasPlugin(BasePlugin::class.java)) {
+        // first try to get it from the android plugin
+        project.extensions.findByType(BaseExtension::class.java)?.let {
+            return it.adbExecutable
+        }
     }
     return findSdkLocation(project)?.resolve("platform-tools/adb")
 }
 
 internal fun findSdkLocation(project: Project): File? {
-    // first try to get it from the android plugin
-    project.extensions.findByType(BaseExtension::class.java)?.let {
-        return it.sdkDirectory
+    if (project.plugins.hasPlugin(BasePlugin::class.java)) {
+        // first try to get it from the android plugin
+        project.extensions.findByType(BaseExtension::class.java)?.let {
+            return it.sdkDirectory
+        }
     }
 
     val rootDir = project.rootDir
