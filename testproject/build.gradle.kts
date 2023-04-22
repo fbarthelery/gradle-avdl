@@ -2,7 +2,7 @@
  * gradle-avdl is a Gradle plugin to launch and stop Android
  * Virtual devices
  *
- * Copyright (C) 2020 by Frederic-Charles Barthelery.
+ * Copyright (C) 2020-2023 by Frederic-Charles Barthelery.
  *
  * This file is part of gradle-avdl.
  *

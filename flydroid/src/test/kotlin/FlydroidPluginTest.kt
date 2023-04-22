@@ -1,8 +1,8 @@
-/*
+/**
  * gradle-avdl is a Gradle plugin to launch and stop Android
  * Virtual devices
  *
- * Copyright (C) 2020 by Frederic-Charles Barthelery.
+ * Copyright (C) 2020-2023 by Frederic-Charles Barthelery.
  *
  * This file is part of gradle-avdl.
  *
@@ -19,7 +19,6 @@
  * You should have received a copy of the GNU General Public License
  * along with gradle-avdl.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.geekorum.gradle.avdl.providers.flydroid
 
 import org.gradle.api.internal.artifacts.dsl.DefaultRepositoryHandler
