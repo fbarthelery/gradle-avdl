@@ -25,8 +25,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     `kotlin-dsl`
     `maven-publish`
-    kotlin("plugin.serialization")
-    id("com.gradle.plugin-publish")
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.gradle.plugin.publish)
 }
 
 repositories {
@@ -48,26 +48,29 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit5"))
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.7.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.1")
-    "functionalTestRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.7.1")
+    testImplementation(libs.junit.juniper.api)
+    testImplementation(libs.junit.juniper.params)
+    testRuntimeOnly(libs.junit.juniper.engine)
+    "functionalTestRuntimeOnly"(libs.junit.juniper.api)
 
     api(project(":plugin"))
-    implementation("com.android.tools.build:gradle-api:8.0.0")
-    compileOnly("com.android.tools.build:gradle:8.0.0")
+    implementation(libs.android.gradle.plugin.api)
+    compileOnly(libs.android.gradle.plugin)
 
-    implementation("com.squareup.retrofit2:retrofit:2.8.1")
-    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
-    implementation("com.squareup.okhttp3:okhttp:4.6.0")
-    implementation("com.squareup.okio:okio:2.6.0")
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.kotlinx.serialization.converter)
+    implementation(platform(libs.kotlinx.serialization.bom))
+    implementation(libs.kotlinx.serialization.json)
+
+    implementation(platform(libs.okhttp.bom))
+    implementation(libs.okhttp)
+    implementation(libs.okio)
 
 
-    implementation(enforcedPlatform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.4.3"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+    implementation(platform(libs.kotlinx.coroutines.bom))
+    implementation(libs.kotlinx.coroutines.core)
 
-    implementation("org.jetbrains.kotlinx:kotlinx-cli:0.2.1")
+    implementation(libs.kotlinx.cli)
 }
 
 gradlePlugin {

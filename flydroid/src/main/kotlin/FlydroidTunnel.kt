@@ -118,7 +118,7 @@ private fun createDestinationResolver(destination: Destination?, flydroidTunnelD
 private class FixedDestinationResolver(
         private val destination: Destination
 ): DestinationResolver {
-    override suspend fun getDestination(): Destination? = destination
+    override suspend fun getDestination(): Destination = destination
 }
 
 private class FlydroidDestinationResolver(
@@ -258,30 +258,29 @@ private class Tunnel(
         }
     }
 
-    @OptIn(InternalCoroutinesApi::class)
     private suspend fun transferPacket() {
-        select<Unit> {
-            localIn.onReceiveOrClosed { bytesOrClosed ->
+        select {
+            localIn.onReceiveCatching { bytesOrClosed ->
                 if (bytesOrClosed.isClosed) {
-                    println("$tunnelId: local socket is closed ${bytesOrClosed.closeCause}")
-                    bytesOrClosed.closeCause?.printStackTrace()
+                    println("$tunnelId: local socket is closed ${bytesOrClosed.exceptionOrNull()}")
+                    bytesOrClosed.exceptionOrNull()?.printStackTrace()
                     throw ClosedReceiveChannelException("local socket closed").apply {
-                        initCause(bytesOrClosed.closeCause)
+                        initCause(bytesOrClosed.exceptionOrNull())
                     }
                 } else {
-                    destinationOutgoing.send(bytesOrClosed.value)
+                    destinationOutgoing.send(bytesOrClosed.getOrThrow())
                 }
             }
 
-            destinationIncoming.onReceiveOrClosed { bytesOrClosed ->
+            destinationIncoming.onReceiveCatching { bytesOrClosed ->
                 if (bytesOrClosed.isClosed) {
-                    println("$tunnelId: websocket is closed ${bytesOrClosed.closeCause}")
-                    bytesOrClosed.closeCause?.printStackTrace()
+                    println("$tunnelId: websocket is closed ${bytesOrClosed.exceptionOrNull()}")
+                    bytesOrClosed.exceptionOrNull()?.printStackTrace()
                     throw ClosedReceiveChannelException("websocket closed").apply {
-                        initCause(bytesOrClosed.closeCause)
+                        initCause(bytesOrClosed.exceptionOrNull())
                     }
                 } else {
-                    localOut.send(bytesOrClosed.value)
+                    localOut.send(bytesOrClosed.getOrThrow())
                 }
             }
         }

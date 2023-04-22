@@ -1,0 +1,66 @@
+# gradle-avdl is a Gradle plugin to launch and stop Android
+# Virtual devices
+#
+# Copyright (C) 2020 by Frederic-Charles Barthelery.
+#
+# This file is part of gradle-avdl.
+#
+# gradle-avdl is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# gradle-avdl is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with gradle-avdl.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+[versions]
+kotlin = "1.8.10"
+gradle-plugin-publish = "1.2.0"
+junit-jupiter = "5.7.1"
+android-gradle-plugin = "8.0.0"
+retrofit = "2.9.0"
+retrofit-kotlinx-serialization-converter = "0.8.0"
+kotlinx-serialization = "1.5.0"
+kotlinx-cli = "0.2.1"
+kotlinx-coroutines = "1.6.4"
+okhttp = "4.10.0"
+okio = "2.6.0"
+
+
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+gradle-plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }
+
+[libraries]
+junit-juniper-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit-jupiter" }
+junit-juniper-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit-jupiter" }
+junit-juniper-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter" }
+
+android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
+android-gradle-plugin-api = { module = "com.android.tools.build:gradle-api", version.ref = "android-gradle-plugin" }
+
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit-kotlinx-serialization-converter" }
+
+kotlinx-coroutines-bom = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-bom", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core" }
+
+kotlinx-serialization-bom = { module = "org.jetbrains.kotlinx:kotlinx-serialization-bom", version.ref="kotlinx-serialization" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json" }
+
+kotlinx-cli = { module = "org.jetbrains.kotlinx:kotlinx-cli", version.ref="kotlinx-cli" }
+
+okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttp"}
+okhttp = { module = "com.squareup.okhttp3:okhttp" }
+okhttp-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor" }
+
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
+

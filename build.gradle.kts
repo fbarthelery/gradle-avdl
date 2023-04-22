@@ -24,10 +24,10 @@ import com.geekorum.build.SourceLicenseCheckerPlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.8.10" apply false
-    kotlin("plugin.serialization") version "1.8.10" apply false
+    alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.kotlin.serialization) apply false
     `maven-publish`
-    id("com.gradle.plugin-publish") version "1.2.0" apply false
+    alias(libs.plugins.gradle.plugin.publish) apply false
 }
 
 

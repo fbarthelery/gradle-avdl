@@ -25,8 +25,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     `kotlin-dsl`
     `maven-publish`
-    kotlin("plugin.serialization")
-    id("com.gradle.plugin-publish")
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.gradle.plugin.publish)
 }
 
 repositories {
@@ -45,14 +45,16 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit5"))
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.7.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.1")
-    "functionalTestRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.7.1")
+    testImplementation(libs.junit.juniper.api)
+    testImplementation(libs.junit.juniper.params)
+    testRuntimeOnly(libs.junit.juniper.engine)
+    "functionalTestRuntimeOnly"(libs.junit.juniper.api)
 
-    implementation("com.android.tools.build:gradle-api:8.0.0")
-    compileOnly("com.android.tools.build:gradle:8.0.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
+    implementation(libs.android.gradle.plugin.api)
+    compileOnly(libs.android.gradle.plugin)
+
+    implementation(platform(libs.kotlinx.serialization.bom))
+    implementation(libs.kotlinx.serialization.json)
 
     api(project(":plugin"))
 }

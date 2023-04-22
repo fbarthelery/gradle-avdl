@@ -22,7 +22,7 @@
 plugins {
     `kotlin-dsl`
     `maven-publish`
-    id("com.gradle.plugin-publish")
+    alias(libs.plugins.gradle.plugin.publish)
 }
 
 kotlin {
@@ -44,10 +44,10 @@ dependencies {
 
     // Use the Kotlin JUnit integration.
     testImplementation(kotlin("test-junit5"))
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.7.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.1")
-    "functionalTestRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.7.1")
+    testImplementation(libs.junit.juniper.api)
+    testImplementation(libs.junit.juniper.params)
+    testRuntimeOnly(libs.junit.juniper.engine)
+    "functionalTestRuntimeOnly"(libs.junit.juniper.api)
 }
 
 gradlePlugin {
