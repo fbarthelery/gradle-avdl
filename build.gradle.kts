@@ -33,7 +33,7 @@ plugins {
 
 allprojects {
     group = "com.geekorum.gradle.avdl"
-    version = "0.0.4-SNAPSHOT"
+    version = "0.0.4"
 
     repositories {
         mavenCentral()
