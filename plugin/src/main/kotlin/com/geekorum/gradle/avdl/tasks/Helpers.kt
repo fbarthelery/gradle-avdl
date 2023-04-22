@@ -24,6 +24,7 @@ package com.geekorum.gradle.avdl.tasks
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.register
+import java.util.*
 
 /**
  * Set up order of tasks so that target is executed between this.
@@ -62,3 +63,5 @@ fun TaskContainer.registerAvdlDevicesTask(
     }
     return launchTask to stopTask
 }
+
+private fun String.capitalize() = replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }

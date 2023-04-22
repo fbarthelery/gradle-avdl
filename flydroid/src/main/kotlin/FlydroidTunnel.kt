@@ -160,7 +160,7 @@ private data class FlydroidDestination(
         ADB, CONSOLE, GRPC
     }
 
-    constructor(id: String, service: String) : this(id, Service.valueOf(service.toUpperCase()))
+    constructor(id: String, service: String) : this(id, Service.valueOf(service.uppercase(Locale.ROOT)))
 }
 
 internal data class Destination(
